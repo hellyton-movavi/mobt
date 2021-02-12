@@ -1,3 +1,16 @@
 # Copyright Max Budko (a.k.a. maxmine2, mxbdk)
 #* This is the special file for working with databases
-from flask_sqlalchemy import SQLAlchemy
+from os import terminal_size
+import psycopg2
+import yaml
+
+file = open('settings.yaml' 'a')
+SETTINGS = yaml.load(file)
+file.close()
+del file
+
+conn = psycopg2.connect(database=SETTINGS['database']['database'],
+                        user=SETTINGS['database']['user'], password=SETTINGS['database']['pass'],
+                        host=SETTINGS['database']['host'], port=SETTINGS['database']['port'])
+
+cursor = conn.cursor()

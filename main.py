@@ -24,16 +24,16 @@ app.config['SECRET_KEY'] = key
 del key
 app.config['SQLALCHEMY_DATABASE_URI'] = SETTINGS['database']['address']
 
-manager = Manager(app)
-db = SQLAlchemy(app)
+# manager = Manager(app)
+# db = SQLAlchemy(app)
 
-class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer(), primary_key=True)
-    nick = db.Column(db.String(96), nullable=False)
-    mobile_operator_id = db.Column(db.Integer(), nullable=False)
-    xp = db.Column(db.Integer(), primary_key=True)
-    data = db.Column(db.Json)
+# class User(db.Model):
+#     __tablename__ = 'users'
+#     id = db.Column(db.Integer(), primary_key=True)
+#     nick = db.Column(db.String(96), nullable=False)
+#     mobile_operator_id = db.Column(db.Integer(), nullable=False)
+#     xp = db.Column(db.Integer(), primary_key=True)
+#     data = db.Column()
 
 
 if __name__ == '__main__':

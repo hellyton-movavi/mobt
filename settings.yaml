@@ -1,4 +1,5 @@
 database:
   address: "postgresql+psycopg2://mobiletychoon:DownloadSpotifyForFree@127.0.0.1/mobiletychoon"
+  pass: "07XePB8Cu1eL#cEWX!Z9zBc!KC!KfPCtQbv"
 server:
   nothing: "here"

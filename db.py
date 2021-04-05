@@ -14,3 +14,4 @@ conn = psycopg2.connect(database=SETTINGS['database']['database'],
                         host=SETTINGS['database']['host'], port=SETTINGS['database']['port'])
 
 cursor = conn.cursor()
+

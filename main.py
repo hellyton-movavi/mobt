@@ -1,10 +1,9 @@
-# Copyright Max Budko (a.k.a. maxmine2, mxbdk)
+# Copyright Max Budko (a.k.a. maxmine2, mxbdk), Lev Kvasnikov
 import datetime
 import os
 
 import yaml
 from flask import Flask, render_template, request, session, url_for
-from flask_sqlalchemy import SQLAlchemy
 
 import mail
 

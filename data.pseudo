@@ -1,0 +1,34 @@
+//
+// * db:
+class Database():
+    def __init__(self, sets):
+        self.__db = mysql.connector.connect(
+            host=sets['host'],
+            user=sets['user'],
+            password=sets['password']
+        )
+        self.__cursor = self.__db.cursor()
+
+
+class Users():
+    // sessions, users, login_users
+    def 
+
+class Buildings():
+    // buildings
+
+// * main:
+
+
+@app.route('/')
+def main_page():
+    return ''
+
+@app.route('/api/login_page')
+def get_login_page():
+    return login_page
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    
+    return result()

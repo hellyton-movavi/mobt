@@ -9,6 +9,12 @@ SETTINGS = yaml.load(file)
 file.close()
 del file
 
+mydb = mysql.connector.connect(
+    host=SETTINGS['database']['host'],
+    user=SETTINGS['database']['user'],
+    password=SETTINGS['database']['password']
+)
+
 # conn = psycopg2.connect(database=SETTINGS['database']['database'],
 #                         user=SETTINGS['database']['user'], password=SETTINGS['database']['pass'],
 #                         host=SETTINGS['database']['host'], port=SETTINGS['database']['port'])

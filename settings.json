@@ -8,5 +8,10 @@
 
   "server": {
     "nothing": "here"
+  },
+
+  "mail_sender": {
+    "sender": "happydayreminder@gmail.com",
+    "passw": "A6N^e9oN"
   }
 }

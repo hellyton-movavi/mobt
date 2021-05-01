@@ -2,10 +2,12 @@
 import datetime
 import os
 
-import yaml
+import json
 from flask import Flask, render_template, request, session, url_for, redirect
 
+import db
 import mail
+import tokenserver
 import sentry_sdk
 
 sentry_sdk.init(
@@ -18,42 +20,61 @@ sentry_sdk.init(
 )
 
 app = Flask(__name__)
-setsfile = open('settings.yaml', 'r')
-SETTINGS = yaml.load(setsfile)
+setsfile = open('settings.json', 'r')
+SETTINGS = json.load(setsfile)
 setsfile.close()
 
-file = open('accesskey.key', 'ab')
+file = open('accesskey.key', 'a+b')
 key = file.read()
-if key != "":
-    key = os.urandom(2 ** 32)
+if key == b'':
+    key = os.urandom(2 ** 16)
     file.write(key)
     file.close()
 
 app.config['SECRET_KEY'] = key
-del key
+del key, file
+
+file = open('jwtkey.pem', 'a+b')
+jwtkey = file.read()
+if jwtkey == b'':
+    jwtkey = os.urandom(2 ** 10)
+    file.write(f'{jwtkey}'.encode())
+    file.close()
+
+
 # app.config['SQLALCHEMY_DATABASE_URI'] = SETTINGS['database']['address']
 
-database = db.Database(SETTINGS['database']['id'])
+database = db.Database(SETTINGS['database'])
+
 
 @app.route('/')
 def mainpage():
-    
+    if 'mobile_tycoon' not in session:
+        session_id = session['mobile_tycoon_ident']
+
 
 @app.route('/api')
 @app.route('/api/')
 def redir_to_main_page():
     return redirect(url_for('/'))
 
+
 @app.route('/api/login_page')
 def get_login_page():
-    return ''
+    return
+
 
 @app.route('/api/login', methods=['POST'])
 def login_page():
+    global jwtkey
+    # TODO Аутентификация по логину и паролю
+    # ? Делать Magic Link?
+
+    # * Выдача JWT-токена
+    # jwttoken = tokenserver.Token.generate(issuedat=datetime.datetime.utcnow(), expires=datetime.datetime.utcnow() + datetime.timedelta(hours=12),
+    #                                       issuer='Mobile Tycoon Login API', algorithm='RS512', subject=user_id, key=jwtkey)
     return ''
 
-@app.route('/api/init')
-    
 
 if __name__ == '__main__':
     app.run()

@@ -64,8 +64,16 @@ def get_login_page():
     return
 
 
-@app.route('/api/login', methods=['POST'])
-def login_page():
+# @app.route('/api/login/magiclink')
+# def login_via_magiclink():
+#     return
+
+# @app.route('/lg/magiclink/<id>')
+# def magiclink_login_apprv(id):
+#     return
+
+@app.route('/api/login/mailpass', methods=['POST'])
+def login_via_mailpass():
     global jwtkey
     # TODO Аутентификация по логину и паролю
     # ? Делать Magic Link?

@@ -7,6 +7,7 @@ from flask import Flask, render_template, request, session, url_for, redirect
 
 import db
 import mail
+import mail_creator
 import tokenserver
 import sentry_sdk
 

@@ -1,7 +1,7 @@
 import smtplib
 import ssl
 from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart, multipart
+from email.mime.multipart import MIMEMultipart
 
 import json
 

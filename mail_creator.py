@@ -15,4 +15,3 @@ class TemplateLetter():
         if not self.rendered_template:
             raise TemplateLetterNotRenderedException
         return self.rendered_template
-

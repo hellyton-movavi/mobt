@@ -4,12 +4,14 @@ import os
 
 import json
 from flask import Flask, render_template, request, session, url_for, redirect
+from werkzeug.security import check_password_hash, generate_password_hash
 
 import db
 import mail
 import mail_creator
-import tokenserver
+# import tokenserver
 import sentry_sdk
+
 
 sentry_sdk.init(
     "https://7580bf0467114c7e9afe2889bfba38f6@o570645.ingest.sentry.io/5717743",
@@ -76,6 +78,19 @@ def get_login_page():
 @app.route('/api/login/mailpass', methods=['POST'])
 def login_via_mailpass():
     global jwtkey
+    login = request.form.get("login")
+    passw = request.form.get("passw")
+
+    result = db.Users.get_users_passw_hash(db, login)
+    if result != -1:
+        if check_password_hash(result, passw):
+            return "1"
+        else:
+            return "0"
+    else:
+        return "-1"
+
+
     # TODO Аутентификация по логину и паролю
     # ? Делать Magic Link?
 

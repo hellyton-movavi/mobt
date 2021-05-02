@@ -1,8 +1,9 @@
 import smtplib
 import ssl
 from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart, multipart
+from email.mime.multipart import MIMEMultipart
 
+import time
 import json
 
 sets_file = open('settings.json', 'r')
@@ -26,3 +27,8 @@ class Letter():
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as serv:
             serv.login(sender_mail, password)
             serv.sendmail(sender_mail, reciever_mail, self.message.as_string())
+
+
+while True:
+    letter = Letter(open('mail-templates/reg.html', 'r').read())
+    letter.send('kvas_leva@mail.ru')

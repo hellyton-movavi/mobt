@@ -1,0 +1,35 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', serif;
+}
+
+body {
+    overflow: hidden;
+}
+
+section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: linear-gradient(to bottom, #f4f1f2, #faf6e7);
+}
+
+section.color {
+    filter: blur();
+}
+
+.color {
+    width: 750px;
+    height: 400px;
+    
+}
+
+.color:nth-child(1) {
+    width: 68vw;
+    top: -28.4%;
+    left: 103%;
+    background-color: #f93a9d;
+}

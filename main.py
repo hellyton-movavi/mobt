@@ -3,13 +3,14 @@ import datetime
 import os
 
 import json
-from flask import Flask, render_template, request, session, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import db
 import mail
 import mail_creator
-# import tokenserver
+import base64
+import tokenserver
 import sentry_sdk
 
 
@@ -37,13 +38,18 @@ if key == b'':
 app.config['SECRET_KEY'] = key
 del key, file
 
-file = open('jwtkey.pem', 'a+b')
+file = open('jwtkey.pem', 'r')
 jwtkey = file.read()
-if jwtkey == b'':
-    jwtkey = os.urandom(2 ** 10)
-    file.write(f'{jwtkey}'.encode())
-    file.close()
+file.close()
 
+MAILTEMPLATES = {
+    "clicklink":                open('mail-templates/magictime.html', 'r').read(),
+    "mail_confirmation":        open('mail-templates/reg.html', 'r').read(),
+    "reg_congrats":             open('mail-templates/reg_congrats.html', 'r').read(),
+    "login_attempt":            open('mail-templates/log_attmpt.html', 'r').read(),
+    "pass_change":              open('mail-templates/passwordchange.html', 'r').read(),
+    "pass_changed":             open('mail-templates/passwordchanged.html', 'r').read()
+}
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = SETTINGS['database']['address']
 
@@ -52,9 +58,18 @@ database = db.Database(SETTINGS['database'])
 
 @app.route('/')
 def mainpage():
-    if 'mobile_tycoon' not in session:
-        session_id = session['mobile_tycoon_ident']
+    token = request.form.get('token')
+    data_tkn = tokenserver.verify_token(token)
+    if data_tkn != -1:
+        if data_tkn['iss'] == 'Mobile Tycoon Login API':
+            user_id = data_tkn['sub']
+            dashbrd = dashboard.Dashboard(user_id, database)
+            return {'status': 'success', 'data': dashbrd.getall()}
 
+        else:
+            return {'status': 'error', 'error': 'bad_token'}
+    else:
+        return {'status': 'error', 'error': 'bad_token'}
 
 @app.route('/api')
 @app.route('/api/')
@@ -67,13 +82,35 @@ def get_login_page():
     return
 
 
-# @app.route('/api/login/magiclink')
-# def login_via_magiclink():
-#     return
+@app.route('/api/login/clicklink')
+def login_via_magiclink():
+    global jwtkey
+    mail_addr = request.form.get('mail')
+    user_id = db.Users.userid_by_mail(mail_addr)
+    if user_id == -1:
+        return {'status': 'error', 'error': 'mail_incorrect'}
 
-# @app.route('/lg/magiclink/<id>')
-# def magiclink_login_apprv(id):
-#     return
+    jwt_clicklink_key = tokenserver.Token.generate(issuedat=datetime.datetime.utcnow(), expires=datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+                                                   issuer='Mobile Tycoon ClickLink Login API', algorithm='RS256', subject=user_id, key=jwtkey)
+
+    templated_letter = mail_creator.TemplateLetter(MAILTEMPLATES['clicklink'])
+    templated_letter.render(
+        loginurl=f'https://{SETTINGS["app"]["base_domain"]}/lg/clicklink/{base64.b64encode(jwt_clicklink_key.encode("ascii")).decode("ascii")}'})
+    sendable_letter = mail.Letter(str(templated_letter))
+    result = sendable_letter.send(mail_addr)
+    return {'status': 'error', 'error' : "couldnt_send_letter"} if result == -1 else {'status': 'success'}
+
+
+@app.route('/lg/clicklink/<id>')
+def magiclink_login_apprv(id):
+    token = base_64.b64decode(id.encode('ascii')).decode('ascii')
+    token_data = tokenserver.verify(token)
+    if token_data == -1:
+        return {'status': 'error', 'error': 'bad_link'}
+    
+    if token_data['iss'] != 'Mobile Tycoon ClickLink Login API'
+    return
+
 
 @app.route('/api/login/mailpass', methods=['POST'])
 def login_via_mailpass():
@@ -84,20 +121,14 @@ def login_via_mailpass():
     result = db.Users.get_users_passw_hash(db, login)
     if result != -1:
         if check_password_hash(result, passw):
-            return "1"
+            jwttoken = tokenserver.Token.generate(issuedat=datetime.datetime.utcnow(), expires=datetime.datetime.utcnow() + datetime.timedelta(hours=12),
+                                                  issuer = 'Mobile Tycoon Login API', algorithm = 'RS512', subject = user_id, key = jwtkey)
+
+            return {'status': 'success', 'token': jwttoken}
         else:
-            return "0"
+            return {'status': 'error', 'error': 'password_incorrect'}
     else:
-        return "-1"
-
-
-    # TODO Аутентификация по логину и паролю
-    # ? Делать Magic Link?
-
-    # * Выдача JWT-токена
-    # jwttoken = tokenserver.Token.generate(issuedat=datetime.datetime.utcnow(), expires=datetime.datetime.utcnow() + datetime.timedelta(hours=12),
-    #                                       issuer='Mobile Tycoon Login API', algorithm='RS512', subject=user_id, key=jwtkey)
-    return ''
+        return {'status': 'error', 'error': 'user_not_found'}
 
 
 if __name__ == '__main__':

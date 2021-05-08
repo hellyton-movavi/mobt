@@ -58,10 +58,31 @@ class Users():
 
     @staticmethod
     def get_users_passw_hash(database: Database, nick: str):
-        #  Нужно обратиться к таблице login_users, запросить password_hush для записи nick
+        #  Нужно обратиться к таблице login_users, запросить password_hush для записи nickname
+        if not Users.user_exists(nick):
+            return -1
         password_hash = database.get(
-            f"""SELECT password_hash FROM login_users WHERE nickname = {nick}""")[0][0]
+            f"""SELECT password_hash FROM login_users WHERE nick = {nick}""")[0][0]
         return password_hash
+
+    @staticmethod
+    def user_exists(database: Database, nick: str):
+        return bool(database.get(f"""SELECT id, nick FROM users WHERE nick={nick}""")[0][0])
+
+    @staticmethod
+    def userid_by_mail(database: Database, mail: str):
+        if not Users.user_exists(Users.nick_by_mail(database, mail)):
+            return -1
+        return database.get(f"""SELECT id FROM users WHERE mail={mail}""")
+
+    @staticmethod
+    def nick_by_mail(database: Database, mail: str):
+        if not database.get(f"""SELECT nick FROM users WHERE mail={mail}""")[0][0]:
+            return -1
+
+        nick = database.get(f"""SELECT nick FROM users WHERE mail={mail}""")[0][0]
+        return nick
+
 
 
 class MobileServices():

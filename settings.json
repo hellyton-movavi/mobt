@@ -13,5 +13,14 @@
   "mail": {
     "sender": "happydayreminder@gmail.com",
     "passw": "A6N^e9oN"
+  },
+
+  "site": {
+    "base_domain": "127.0.0.1"
+  },
+  "tokens":
+  {
+    "clicklink_issuer": "Mobile Tycoon ClickLink Login API",
+    "login_issuer": "Mobile Tycoon Standart Login API"
   }
 }

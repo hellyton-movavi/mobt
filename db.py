@@ -4,12 +4,8 @@ from os import terminal_size
 import mysql.connector
 import json
 import random
-
-file = open('settings.json', 'r')
-SETTINGS = json.load(file)
+from staticparams import *
 print(SETTINGS)
-file.close()
-del file
 
 
 # conn = psycopg2.connect(database=SETTINGS['database']['database'],
@@ -58,7 +54,7 @@ class Users():
 
     @staticmethod
     def get_users_passw_hash(database: Database, nick: str):
-        #  Нужно обратиться к таблице login_users, запросить password_hush для записи nickname
+        # * Нужно обратиться к таблице login_users, запросить password_hush для записи nickname
         if not Users.user_exists(nick):
             return -1
         password_hash = database.get(
@@ -98,7 +94,18 @@ class MobileServices():
 class Buildings():
     @staticmethod
     def create_building(database: Database, mobile_service_id: int, building_type: int, building_model: int, lan: float, lon: float) -> int:
-        database.insert(
-            f"""INSERT INTO buildings (mobile_service_id, building_type, building_model, lan, lon) VALUES ({mobile_service_id}, {building_type}, {building_model}, {lan}, {lon});""")
+        database.insert(f"""INSERT INTO buildings (mobile_service_id, building_type, building_model, lan, lon) VALUES ({mobile_service_id}, {building_type} {building_model}, {lan}, {lon})""")
         building_id = database.get(f"""SELECT LAST_INSERT_ID();""")[0][0]
         return building_id
+
+    def getbuildings(database: Database, mobile_service_id: int):
+        buildings = database.get(f"""SELECT * FROM buildings WHERE mobile_service_id = {mobile_service_id}""")[0]
+        return {
+            "buildings": [{
+                "id": building[0],
+                "type": building[2],
+                "lan": building[4],
+                "lon": building[5]
+            }]
+        }
+        

@@ -1,16 +1,4 @@
 # Copyright Max Budko (a.k.a. maxmine2, mxbdk), Lev Kvasnikov
-import datetime
-import os
-
-import json
-from flask import Flask, render_template, request, url_for, redirect
-from werkzeug.security import check_password_hash, generate_password_hash
-
-import db
-import mail
-import mail_creator
-import base64
-import tokenserver
 import sentry_sdk
 
 
@@ -23,10 +11,21 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
 )
 
+import datetime
+import os
+
+import json
+from flask import Flask, render_template, request, url_for, redirect
+from werkzeug.security import check_password_hash, generate_password_hash
+
+import db
+import mail
+import mail_creator
+import base64
+import tokenserver
+from staticparams import *
+
 app = Flask(__name__)
-setsfile = open('settings.json', 'r')
-SETTINGS = json.load(setsfile)
-setsfile.close()
 
 file = open('accesskey.key', 'a+b')
 key = file.read()
@@ -41,15 +40,6 @@ del key, file
 file = open('jwtkey.pem', 'r')
 jwtkey = file.read()
 file.close()
-
-MAILTEMPLATES = {
-    "clicklink":                open('mail-templates/magictime.html', 'r').read(),
-    "mail_confirmation":        open('mail-templates/reg.html', 'r').read(),
-    "reg_congrats":             open('mail-templates/reg_congrats.html', 'r').read(),
-    "login_attempt":            open('mail-templates/log_attmpt.html', 'r').read(),
-    "pass_change":              open('mail-templates/passwordchange.html', 'r').read(),
-    "pass_changed":             open('mail-templates/passwordchanged.html', 'r').read()
-}
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = SETTINGS['database']['address']
 
@@ -95,7 +85,7 @@ def login_via_magiclink():
 
     templated_letter = mail_creator.TemplateLetter(MAILTEMPLATES['clicklink'])
     templated_letter.render(
-        loginurl=f'https://{SETTINGS["app"]["base_domain"]}/lg/clicklink/{base64.b64encode(jwt_clicklink_key.encode("ascii")).decode("ascii")}'})
+        loginurl=f'https://{SETTINGS["app"]["base_domain"]}/lg/clicklink/{base64.b64encode(jwt_clicklink_key.encode("ascii")).decode("ascii")}')
     sendable_letter = mail.Letter(str(templated_letter))
     result = sendable_letter.send(mail_addr)
     return {'status': 'error', 'error' : "couldnt_send_letter"} if result == -1 else {'status': 'success'}
@@ -108,7 +98,8 @@ def magiclink_login_apprv(id):
     if token_data == -1:
         return {'status': 'error', 'error': 'bad_link'}
     
-    if token_data['iss'] != 'Mobile Tycoon ClickLink Login API'
+    if token_data['iss'] != 'Mobile Tycoon ClickLink Login API':
+        return redirect()
     return
 
 
@@ -130,6 +121,8 @@ def login_via_mailpass():
     else:
         return {'status': 'error', 'error': 'user_not_found'}
 
-
+@app.route('/api/reg')
+def reg_link():
+    
 if __name__ == '__main__':
     app.run()

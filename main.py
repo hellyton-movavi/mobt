@@ -124,5 +124,9 @@ def login_via_mailpass():
 @app.route('/api/reg')
 def reg_link():
     
+
+@app.route('/api/applc/update'):
+def app_upd():
+    return json.dumps({"latest": '0.1'})
 if __name__ == '__main__':
     app.run()

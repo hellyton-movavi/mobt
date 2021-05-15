@@ -109,3 +109,7 @@ class Buildings():
             }]
         }
         
+class History():
+    @staticmethod
+    def gethistory():
+        pass

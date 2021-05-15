@@ -9,7 +9,7 @@ class Dashboard():
 
         self.data = dict()
 
-    def __get_history():
+    def __get_history(self):
         self.__income_history = db.History.gethisttory(self.__database, period_from=datetime.datetime.utcnow() - datetime.timedelta(hours=12),
                                                        period_to=datetime.datetime.utcnow(), records_type=RECORDS_TYPES['income'])
 
@@ -19,11 +19,11 @@ class Dashboard():
         self.__users_history = db.History.gethistory(self.__database, period_from=datetime.datetime.utcnow() - datetime.timedelta(hours=12),
                                                      period_to=datetime.datetime.utcnow(), records_type=RECORDS_TYPES['users'])
 
-    def __get_buildings():
+    def __get_buildings(self):
         self.__buildings = db.Buildings.getbuildings(self.__database, period_from=datetime.datetime.utcnow() - datetime.timedelta(hours=12),
                                                      period_to=datetime.datetime.utcnow())
 
-    def getall():
+    def getall(self):
         self.__get_history()
         self.__get_buildings()
         return {

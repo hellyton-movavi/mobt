@@ -23,6 +23,7 @@ import mail
 import mail_creator
 import base64
 import tokenserver
+import dashboard
 from staticparams import *
 
 app = Flask(__name__)
@@ -93,7 +94,7 @@ def login_via_magiclink():
 
 @app.route('/lg/clicklink/<id>')
 def magiclink_login_apprv(id):
-    token = base_64.b64decode(id.encode('ascii')).decode('ascii')
+    token = base64.b64decode(id.encode('ascii')).decode('ascii')
     token_data = tokenserver.verify(token)
     if token_data == -1:
         return {'status': 'error', 'error': 'bad_link'}
@@ -112,8 +113,9 @@ def login_via_mailpass():
     result = db.Users.get_users_passw_hash(db, login)
     if result != -1:
         if check_password_hash(result, passw):
+            user_id = db.Users.userid_by_nick(database, login)
             jwttoken = tokenserver.Token.generate(issuedat=datetime.datetime.utcnow(), expires=datetime.datetime.utcnow() + datetime.timedelta(hours=12),
-                                                  issuer = 'Mobile Tycoon Login API', algorithm = 'RS512', subject = user_id, key = jwtkey)
+                                                  issuer = 'Mobile Tycoon Login API', algorithm = 'RS512', subject=user_id, key=jwtkey)
 
             return {'status': 'success', 'token': jwttoken}
         else:
@@ -123,10 +125,18 @@ def login_via_mailpass():
 
 @app.route('/api/reg')
 def reg_link():
+    mail = request.form.get('mail')
+    pw = request.form.get('pw')
+    nickname = request.form.get('nickname')
+
+    if db.Users.user_exists(database, nickname):
+        return {"status": 'error', 'error': 'nickname_is_claimed'}
+    db.Users.create_user()
     
 
-@app.route('/api/applc/update'):
+@app.route('/api/applc/update')
 def app_upd():
     return json.dumps({"latest": '0.1'})
+
 if __name__ == '__main__':
     app.run()

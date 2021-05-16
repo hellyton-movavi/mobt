@@ -54,7 +54,7 @@ class Users():
 
     @staticmethod
     def get_users_passw_hash(database: Database, nick: str):
-        # * Нужно обратиться к таблице login_users, запросить password_hush для записи nickname
+        # * Нужно обратиться к таблице login_users, запросить password_hash для записи nickname
         if not Users.user_exists(nick):
             return -1
         password_hash = database.get(
@@ -70,6 +70,15 @@ class Users():
         if not Users.user_exists(Users.nick_by_mail(database, mail)):
             return -1
         return database.get(f"""SELECT id FROM users WHERE mail={mail}""")
+
+
+    @staticmethod
+    def userid_by_nick(database: Database, nick: str) -> int:
+        if database.get(f"""SELECT id FROM users WHERE nick={nick}imp""")[0][0]:
+            return -1
+
+        id = database.get(f"""SELECT id FROM users WHERE nick={nick}""")[0][0]
+        return id
 
     @staticmethod
     def nick_by_mail(database: Database, mail: str):
@@ -106,10 +115,10 @@ class Buildings():
                 "type": building[2],
                 "lan": building[4],
                 "lon": building[5]
-            }]
+            } for building in buildings]
         }
         
 class History():
     @staticmethod
-    def gethistory():
+    def gethistory(database):
         pass

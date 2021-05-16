@@ -190,7 +190,7 @@ class Login():
             if data['status'] == 'error':
                 return -1, data['error']
 
-            else return 0
+            else: return 0
 
 
 app = App()

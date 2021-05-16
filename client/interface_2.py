@@ -74,7 +74,11 @@ class App():
             tk.W, tk.E), padx=10, pady=10)
 
     def checking(self, event):
-        print('Проверка')
+        #  Значит нажали на кнопку и нужно считывать данные
+        self.nick = self.en_nick.get()
+        self.password = self.en_psw.get()
+
+        Login.login(self.nick, self.password)
 
     def reg(self, event):
         """Регистрация"""
@@ -185,12 +189,13 @@ class Login():
             "password": pw
         }
         recv = rq.post(SERVER_ADDRESS + '/api/login')
-        if recv.status_code == 200:
+        if recv["status_code"] == 200:
             data = dict(eval(recv.texts))
             if data['status'] == 'error':
                 return -1, data['error']
 
-            else return 0
+            else:
+                return 0, 'success'
 
 
 app = App()

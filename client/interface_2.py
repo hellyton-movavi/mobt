@@ -100,12 +100,14 @@ class App():
         response = Login.register(nick, pw, mail)
         if response == 0:
             # TODO: Сказать пользователю "Зайдите на почту" =)
+
             pass
         elif response == -1:
             # TODO: Какая-то проблема, мол, попробуйте позже или обновите приложение
             pass
         elif response == -2:
             # TODO: Тоже проблема, но уж точно на стороне сервера
+            pass
         self.main_root_from_reg(self)
 
     def main_root_from_reg(self, event):
@@ -136,18 +138,30 @@ class Login():
             "nick": nick,
             "password": pw}
 
-        u_save = rq.post(SERVER_ADDRESS + "/api/reg/", data)
+        u_save = rq.post(SERVER_ADDRESS + "/api/reg", data)
         print(u_save)
         recv = dict(eval(u_save.text))
         print(recv)
         if recv.status_code == 200:
-            return 0
+            return 0, recv
         elif 400 <= recv.status_code < 500:
-            return -1
+            return -1, recv
         elif recv.status_code >= 500:
-            return -2
+            return -2, recv
+
     @staticmethod
-    def login():
+    def login(nick, pw):
+        data = {
+            "nick": nick,
+            "password": pw
+        }
+        recv = rq.post(SERVER_ADDRESS + '/api/login')
+        if recv.status_code == 200:
+            data = dict(eval(recv.texts))
+            if data['status'] == 'error':
+                return -1, data['error']
+
+            else return 0
 
 
 app = App()

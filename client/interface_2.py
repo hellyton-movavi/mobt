@@ -47,6 +47,35 @@ class App():
         self.log_in = tk.Toplevel(self.root)
         self.log_in.title('Log in')
 
+        self.lb_nick = tk.Label(self.log_in, text="Enter nick:")
+        self.en_nick = tk.Entry(self.log_in)
+
+        self.lb_psw = tk.Label(self.log_in, text="Enter password:")
+        self.en_psw = tk.Entry(self.log_in, show='*')
+
+        self.check = tk.Button(self.log_in, text="Submit")
+        self.check.bind('<Button-1>', self.checking)
+
+        self.information = tk.Label(self.log_in, text="")
+
+        #  Проявить поля для ввода nick
+        self.en_nick.grid(row=0, column=1, columnspan=2,
+                       sticky=tk.W, padx=10, pady=10)
+        self.lb_nick.grid(row=0, column=0, sticky=tk.W, padx=10, pady=10)
+
+        #  Проявить поля для ввода password
+        self.en_psw.grid(row=1, column=1, columnspan=2,
+                       sticky=tk.W, padx=10, pady=10)
+        self.lb_psw.grid(row=1, column=0, sticky=tk.W, padx=10, pady=10)
+
+        #  Проявить кнопку для отправления данных и кнопку инфы
+        self.check.grid(row=3, column=1, sticky=(tk.W, tk.E), padx=10, pady=10)
+        self.information.grid(row=3, column=0, sticky=(
+            tk.W, tk.E), padx=10, pady=10)
+
+    def checking(self, event):
+        print('Проверка')
+
     def reg(self, event):
         """Регистрация"""
         self.root.withdraw()  # Скрываем главное окошко
@@ -106,6 +135,7 @@ class App():
             pass
         elif response == -2:
             # TODO: Тоже проблема, но уж точно на стороне сервера
+            pass
         self.main_root_from_reg(self)
 
     def main_root_from_reg(self, event):
@@ -146,8 +176,10 @@ class Login():
             return -1
         elif recv.status_code >= 500:
             return -2
+
     @staticmethod
     def login():
+        pass
 
 
 app = App()

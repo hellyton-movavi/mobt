@@ -1,3 +1,5 @@
+import json
+
 MAILTEMPLATES = {
     "clicklink":                open('mail-templates/magictime.html', 'r').read(),
     "mail_confirmation":        open('mail-templates/reg.html', 'r').read(),
@@ -12,7 +14,6 @@ SETTINGS = json.load(setsfile)
 setsfile.close()
 
 RECORDS_TYPES = {
-    'income': 0,
-    'expenses': 1,
-    'users': 2
+    'balance': 0,
+    'users': 1
 }

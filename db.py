@@ -1,4 +1,4 @@
-# Copyright Max Budko (a.k.a. maxmine2, mxbdk), Lev Kvasnikov
+# Copyright Max Budko (a.k.a. maxmine2, mxbdk), Lev Kvasnikov, Sofie Litvin 2021
 # * This is the special file for working with databases
 from os import terminal_size
 import mysql.connector
@@ -37,12 +37,12 @@ class Database():
 
 class Users():
     @staticmethod
-    def create_user(database: Database, nick: str, mail: str, password_hash: str, mobile_service_id=None) -> int:
+    def create_user(database: Database, nick: str, mail: str, password_hash: str, mobile_service_id=None, is_confirmed=False) -> int:
         #  Первый запрос - создать таблицу Users
         level = 1
         xp = 0
         database.insert(
-            f"""INSERT INTO users (mobile_service_id, level, xp) VALUES ({mobile_service_id if mobile_service_id != None else 'null'}, {level}, {xp})""")
+            f"""INSERT INTO users (mobile_service_id, level, xp, is_confirmed) VALUES ({mobile_service_id if mobile_service_id != None else 'null'}, {level}, {xp}, {is_confirmed})""")
         #  Создание новой записи в таблицу(строка users)
         id_user = database.get(f"""SELECT LAST_INSERT_ID();""")[0][0]
         #  get - запрос к базе данных
@@ -53,8 +53,13 @@ class Users():
         return id_user
 
     @staticmethod
+    def confirm_user(database: Database, user_id: int):
+        database.update(f"""UPDATE users SET is_confirmed=true WHERE user={user_id}""")
+        return 0
+
+    @staticmethod
     def get_users_passw_hash(database: Database, nick: str):
-        # * Нужно обратиться к таблице login_users, запросить password_hush для записи nickname
+        # * Нужно обратиться к таблице login_users, запросить password_hash для записи nickname
         if not Users.user_exists(nick):
             return -1
         password_hash = database.get(
@@ -106,10 +111,11 @@ class Buildings():
                 "type": building[2],
                 "lan": building[4],
                 "lon": building[5]
-            }]
+            } for building in buildings]
         }
         
 class History():
     @staticmethod
-    def gethistory():
-        pass
+    def gethistory(database: Database, mobile_service_id: int, timedelta: int, recordtype: int):
+        info = database.get(f"""SELECT * FROM history WHERE id={mobile_service_id} AND record_creation_date >= Convert("datetime", "{timedelta}") AND record_type = {recordtype}""")
+        return info[0][0]

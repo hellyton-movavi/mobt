@@ -38,4 +38,4 @@ class Letter():
 
 # while True:
 #     letter = Letter(open('mail-templates/reg.html', 'r').read())
-#     letter.send('mbudko2@gmail.com')
+#     letter.send('kvas.leva@mail.ru')

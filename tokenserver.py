@@ -48,3 +48,7 @@ class Token():
 
             elif isinstance(e, jwt.exceptions.InvalidIssuedAtError):
                 return -1
+
+
+jwttoken = Token.generate(issuedat=datetime.datetime.utcnow(), expires=datetime.datetime.utcnow() + datetime.timedelta(hours=12),
+                                                  issuer = 'Mobile Tycoon Login API', algorithm = 'RS512', subject = user_id=1, key = jwtkey)

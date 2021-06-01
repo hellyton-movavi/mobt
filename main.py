@@ -164,12 +164,22 @@ def reg_link():
 def app_upd():
     return json.dumps({"latest": '0.1'})
 
+def make_history():
+    users = db.Users.get_all_ids()
+    for user in users:
+        db.History.create_history(database, user)
+
+def make_money_update():
+    users = db.Users.get_all_ids()
+    for user in users:
+        db.Users.toggle_income(database, user)
 
 def regularupdate():
     th.start_new_thread(make_history, tuple())
     while True:
-        time.sleep(86400)
-        th.start_new_thread(make_history, tuple())
+        time.sleep(86390)
+        make_history()
+        make_money_update()
 
 def run_regularupdate():
     th.start_new_thread(regularupdate, tuple())

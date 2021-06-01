@@ -119,3 +119,14 @@ class History():
     def gethistory(database: Database, mobile_service_id: int, timedelta: int, recordtype: int):
         info = database.get(f"""SELECT * FROM history WHERE id={mobile_service_id} AND record_creation_date >= Convert("datetime", "{timedelta}") AND record_type = {recordtype}""")
         return info[0][0]
+
+    @staticmethod
+    def create_history(database: Database, user_id: int):
+        info = Users.get_money_users(database, user_id)
+
+        # ! TODO
+        # ! TODO
+        # TODO
+        # TODO
+        # ! TODO
+        # ! TODO
